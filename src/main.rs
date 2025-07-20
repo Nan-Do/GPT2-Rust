@@ -9,7 +9,7 @@ use rust_tokenizers::tokenizer::Gpt2Tokenizer;
 
 use crate::gpt2_model::{GPTModelConfig, GPTModel};
 use crate::train::train;
-use crate::types::{MyBackend, MyAutodiffBackend};
+use crate::types::MyAutodiffBackend;
 use crate::utils::generate_text;
 
 mod data;
@@ -66,6 +66,10 @@ struct GptOptions {
     /// text to be continued by the model after training (Hello world! by default)
     #[argh(option, default = "String::from(\"Hello World!\")")]
     text_to_continue: String,
+
+    /// random seed (123 by default).
+    #[argh(option, default = "123")]
+    seed: u64,
 }
 
 fn main() {
@@ -86,7 +90,8 @@ fn main() {
     println!("Number of epochs to train: {}", args.epochs);
 
     println!("--- Initializing Device ---");
-    MyBackend::seed(123);
+    println!("Using seed {}", args.seed);
+    MyAutodiffBackend::seed(args.seed);
     let device = &<MyAutodiffBackend as Backend>::Device::default();
 
     println!("--- Initializing Tokenizer ---");
@@ -109,7 +114,7 @@ fn main() {
 
     println!("--- Training Model ---");
     let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    gpt2_model = train(gpt2_model, &tokenizer, raw_text,  args.context_length, args.epochs, args.batch_size);
+    gpt2_model = train(gpt2_model, &tokenizer, raw_text,  args.context_length, args.epochs, args.batch_size, args.seed);
     let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
     println!("Training took {:?}s", end-start);
 

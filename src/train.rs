@@ -15,6 +15,7 @@ pub fn train(
     max_seq_len: usize,
     num_epochs: usize,
     batch_size: usize,
+    seed: u64,
 ) -> GPTModel<MyAutodiffBackend> {
     let train_ratio = 0.9;
     let split_idx = (text_data.len() as f32 * train_ratio) as usize;
@@ -30,11 +31,13 @@ pub fn train(
     let batcher: TokenizedBatcher<MyAutodiffBackend> = TokenizedBatcher::default();
     let train_dataloader = DataLoaderBuilder::new(batcher.clone())
         .batch_size(batch_size)
+        .shuffle(seed)
         .num_workers(1)
         .build(train_dataset);
 
     let val_dataloader = DataLoaderBuilder::new(batcher)
         .batch_size(batch_size)
+        .shuffle(seed)
         .num_workers(1)
         .build(val_dataset);
 
