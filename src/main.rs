@@ -9,7 +9,7 @@ use rust_tokenizers::tokenizer::Gpt2Tokenizer;
 
 use crate::gpt2_model::{GPTModelConfig, GPTModel};
 use crate::train::train;
-use crate::types::MyAutodiffBackend;
+use crate::types::{MyAutodiffBackend, TrainingOptions};
 use crate::utils::generate_text;
 
 mod data;
@@ -123,11 +123,18 @@ fn main() {
         false).init(device);
 
     println!("--- Training Model ---");
+    let training_options = TrainingOptions {
+        max_seq_len: args.context_length,
+        num_epochs: args.epochs,
+        batch_size: args.batch_size,
+        seed: args.seed,
+        train_ratio: args.train_ratio,
+    };
     let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    gpt2_model = train(gpt2_model, &tokenizer, raw_text,  args.context_length, args.epochs, args.batch_size, args.seed, args.train_ratio);
+    gpt2_model = train(gpt2_model, &tokenizer, raw_text, training_options);
     let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
     println!("--- Training Summary ---");
-    println!("\tTraining took {:?}s", end-start);
+    println!("\tTraining took {:?}", end-start);
 
     println!("--- Generating Text After Training ---");
     println!("\t{}", generate_text(&gpt2_model, &tokenizer, &args.text_to_continue, 25, args.context_length, 0.8, 20));
