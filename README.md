@@ -1,0 +1,96 @@
+# GPT-2 from Scratch in Rust 🦀
+
+This repository contains a from-scratch implementation of a GPT-2 style Large Language Model (LLM) written entirely in **Rust**. It utilizes the powerful and flexible [**Burn**](https://burn.dev/) deep learning framework.
+
+The primary goal of this project is to serve as an educational resource, demonstrating the core components of a modern LLM in a performant, type-safe language. It is a Rust-based counterpart to the excellent Python/PyTorch implementation by Sebastian Raschka.
+
+[![Rust](https://img.shields.io/badge/rust-1.78.0-orange.svg)](https://www.rust-lang.org/)
+[![License: GPL-3.0](https://www.gnu.org/graphics/gpl-v3-logo.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+***
+
+## ✨ Features
+
+* ✅ **GPT-2 Architecture:** A clean implementation of the decoder-only transformer architecture from the ground up.
+* 🧠 **Text Generation:** Generate new text from a given prompt.
+* 🌡️ **Temperature Sampling:** Control the creativity and randomness of the output.
+* 🔝 **Top-K Sampling:** Limit token selection to the *k* most likely next tokens to improve coherence.
+* 🏋️ **Model Training:** Includes functionality to train the model on a custom text corpus.
+
+***
+
+## 📚 Inspiration & Credits
+
+This work is heavily inspired by and serves as a Rust-based companion to the following amazing resources:
+
+* **LLMs from Scratch by Sebastian Raschka:** The original Python/PyTorch guide that this project is based on.
+    * GitHub Repository: [**rasbt/LLMs-from-scratch**](https://github.com/rasbt/LLMs-from-scratch)
+* **The Burn Framework:** A modern, flexible, and efficient deep learning framework for Rust.
+    * Official Website: [**burn.dev**](https://burn.dev/)
+
+***
+
+## ⚙️ Installation
+
+To get started, you'll need the Rust tool-chain installed on your system. You can install it via [rustup.rs](https://rustup.rs/).
+
+1.  **Clone the repository:**
+    ```sh
+    git clone <YOUR_REPOSITORY_URL>
+    cd <your-repo-name>
+    ```
+
+2.  **Build the project in release mode:**
+    Building in release mode is highly recommended for performance.
+    ```sh
+    cargo build --release
+    ```
+
+***
+
+## 🚀 Usage
+
+So far the tool only trains the model and uses it to generate text, the capability to store the weights and use the tool to just generate text will be probably added in the future.
+
+### Training the Model
+
+You can train the model from scratch on your own dataset (e.g., a single large .txt file).
+
+**Command:**
+```Bash
+
+cargo run --release -- [OPTIONS]
+
+Options:
+  --context-length  context length for the GPT Model (1024 by default).
+  --emb-dim         embedding dimension for the GPT Model (768 by default).
+  --num-layers      number of layers in the Transformer Block (12 by default).
+  --num-heads       number of heads for the Multi Head Attention Block (12 by
+                    default).
+  --epochs          number of epochs to train (10 by default).
+  --batch-size      batch size (2 by default).
+  --training-file-name
+                    text file that will be used to train the model
+                    (the-verdict.txt by default)
+  --vocab-file      vocab file used with the BPE Tokenizer (vocab.json by
+                    default)
+  --merges-file     merges file used with the BPE Tokenizer (merges.txt by
+                    default)
+  --text-to-continue
+                    text to be continued by the model after training (Hello
+                    world! by default)
+  --seed            random seed (123 by default).
+  --train-ratio     train ratio for training (0.9 by default).
+  --help, help      display usage information
+```
+
+
+**Example:**
+```Bash
+
+cargo run --release -- \
+  --context-length 256 \
+  --epochs 5 \
+  --batch-size 4
+```
+
