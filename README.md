@@ -5,7 +5,6 @@ This repository contains a from-scratch implementation of a GPT-2 style Large La
 The primary goal of this project is to serve as an educational resource, demonstrating the core components of a modern LLM in a performant, type-safe language. It is a Rust-based counterpart to the excellent Python/PyTorch implementation by Sebastian Raschka.
 
 [![Rust](https://img.shields.io/badge/rust-1.78.0-orange.svg)](https://www.rust-lang.org/)
-[![License: GPL-3.0](https://www.gnu.org/graphics/gplv3-with-text-84x42.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 ***
 
