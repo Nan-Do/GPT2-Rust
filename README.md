@@ -56,7 +56,7 @@ So far the tool only trains the model and uses it to generate text, the capabili
 You can train the model from scratch on your own dataset (e.g., a single large .txt file).
 
 **Command:**
-```Bash
+```
 
 cargo run --release -- [OPTIONS]
 
