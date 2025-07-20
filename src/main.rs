@@ -70,27 +70,39 @@ struct GptOptions {
     /// random seed (123 by default).
     #[argh(option, default = "123")]
     seed: u64,
+
+    /// train ratio for training (0.9 by default).
+    #[argh(option, default = "0.9")]
+    train_ratio: f32,
 }
 
 fn main() {
     let args: GptOptions = argh::from_env();
 
     println!("--- Tokenizer Summary ---");
-    println!("Using vocabulary file: {}", args.vocab_file);
-    println!("Using merges file: {}", args.merges_file);
+    println!("\tUsing vocabulary file: {}", args.vocab_file);
+    println!("\tUsing merges file: {}", args.merges_file);
+
     println!("--- Model Summary ---"); 
-    println!("Vocabulary size: 50257");
-    println!("Context length: {}", args.context_length);
-    println!("Embeddings dimension: {}", args.emb_dim);
-    println!("Number of layers in the transformer block : {}", args.num_layers);
-    println!("Number of heads in the multi head attention block : {}", args.num_heads);
+    println!("\tVocabulary size: 50257");
+    println!("\tContext length: {}", args.context_length);
+    println!("\tEmbeddings dimension: {}", args.emb_dim);
+    println!("\tNumber of layers in the transformer block : {}", args.num_layers);
+    println!("\tNumber of heads in the multi head attention block : {}", args.num_heads);
+
+    println!("--- Loading Training Text ---");
+    println!("\tUsing file {} ", args.training_file_name);
+    let raw_text: String = fs::read_to_string(args.training_file_name).expect("Training file must exist");
+    let train_size = (raw_text.len() as f32 * args.train_ratio) as usize;
+    println!("\tTraining size: {}", train_size);
+    println!("\tValidation size: {}", raw_text.len() - train_size);
 
     println!("--- Training Summary ---");
-    println!("Batch Size: {}", args.batch_size);
-    println!("Number of epochs to train: {}", args.epochs);
+    println!("\tBatch Size: {}", args.batch_size);
+    println!("\tNumber of epochs to train: {}", args.epochs);
 
     println!("--- Initializing Device ---");
-    println!("Using seed {}", args.seed);
+    println!("\tUsing seed {}", args.seed);
     MyAutodiffBackend::seed(args.seed);
     let device = &<MyAutodiffBackend as Backend>::Device::default();
 
@@ -109,15 +121,14 @@ fn main() {
         args.num_layers,
         0.1,
         false).init(device);
-    println!("--- Reading the given text file {} ---", args.training_file_name);
-    let raw_text: String = fs::read_to_string(args.training_file_name).expect("Training file must exist");
 
     println!("--- Training Model ---");
     let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    gpt2_model = train(gpt2_model, &tokenizer, raw_text,  args.context_length, args.epochs, args.batch_size, args.seed);
+    gpt2_model = train(gpt2_model, &tokenizer, raw_text,  args.context_length, args.epochs, args.batch_size, args.seed, args.train_ratio);
     let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    println!("Training took {:?}s", end-start);
+    println!("--- Time Spent Training  ---");
+    println!("\tTraining took {:?}s", end-start);
 
     println!("--- Generating Text After Training ---");
-    println!("{}", generate_text(&gpt2_model, &tokenizer, &args.text_to_continue, 25, args.context_length));
+    println!("\t{}", generate_text(&gpt2_model, &tokenizer, &args.text_to_continue, 25, args.context_length));
 }

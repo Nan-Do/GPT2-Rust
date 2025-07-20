@@ -16,14 +16,11 @@ pub fn train(
     num_epochs: usize,
     batch_size: usize,
     seed: u64,
+    train_ratio: f32,
 ) -> GPTModel<MyAutodiffBackend> {
-    let train_ratio = 0.9;
     let split_idx = (text_data.len() as f32 * train_ratio) as usize;
     let train_data = &text_data[0..split_idx];
     let val_data = &text_data[split_idx..text_data.len()];
-
-    println!("Train data size: {}", train_data.len());
-    println!("Val data size: {}", val_data.len());
 
     let train_dataset = TokenizedDataset::new(&tokenizer, &train_data, max_seq_len);
     let val_dataset = TokenizedDataset::new(&tokenizer, &val_data, max_seq_len);
@@ -54,7 +51,7 @@ pub fn train(
                 .forward(output.clone().reshape([batch_size * seq_len, vocab_size]), batch.targets.clone());
 
             println!(
-                "[Train - Epoch {} - Iteration {}] Loss {:.3}",
+                "\t[Train - Epoch {} - Iteration {}] Loss {:.3}",
                 epoch,
                 iteration,
                 loss.clone().into_scalar(),
@@ -75,15 +72,15 @@ pub fn train(
                 .forward(output.clone().reshape([batch_size * seq_len, vocab_size]), batch.targets.clone());
 
             println!(
-                "[Valid - Epoch {} - Iteration {}] Loss {:.3}",
+                "\t[Valid - Epoch {} - Iteration {}] Loss {:.3}",
                 epoch,
                 iteration,
                 loss.clone().into_scalar(),
             );
 
         }
-
-        println!("{}", generate_text(&model, &tokenizer, "This is a test, so please continue this sentence", 25, max_seq_len));
+        
+        println!("\tText sample: {}", generate_text(&model, &tokenizer, "This is a test, so please continue this sentence", 25, max_seq_len));
     }
 
     model
