@@ -126,9 +126,9 @@ fn main() {
     let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
     gpt2_model = train(gpt2_model, &tokenizer, raw_text,  args.context_length, args.epochs, args.batch_size, args.seed, args.train_ratio);
     let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-    println!("--- Time Spent Training  ---");
+    println!("--- Training Summary ---");
     println!("\tTraining took {:?}s", end-start);
 
     println!("--- Generating Text After Training ---");
-    println!("\t{}", generate_text(&gpt2_model, &tokenizer, &args.text_to_continue, 25, args.context_length));
+    println!("\t{}", generate_text(&gpt2_model, &tokenizer, &args.text_to_continue, 25, args.context_length, 0.8, 20));
 }

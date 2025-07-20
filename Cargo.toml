@@ -6,4 +6,5 @@ edition = "2024"
 [dependencies]
 argh = "0.1.13"
 burn = { version = "~0.18", features = ["train", "wgpu"] }
+rand = "0.9.1"
 rust_tokenizers = "8.1.1"

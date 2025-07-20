@@ -80,7 +80,7 @@ pub fn train(
 
         }
         
-        println!("\tText sample: {}", generate_text(&model, &tokenizer, "This is a test, so please continue this sentence", 25, max_seq_len));
+        println!("\tText sample: {}", generate_text(&model, &tokenizer, "This is a test, so please continue this sentence", 25, max_seq_len, 0.0, 0));
     }
 
     model

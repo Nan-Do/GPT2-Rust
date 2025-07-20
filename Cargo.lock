@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
  "argh",
  "burn",
+ "rand 0.9.1",
  "rust_tokenizers",
 ]
 
