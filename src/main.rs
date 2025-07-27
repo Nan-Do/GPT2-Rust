@@ -12,7 +12,7 @@ use rust_tokenizers::tokenizer::Gpt2Tokenizer;
 
 use crate::gpt2_model::{GPTModelConfig, GPTModel};
 use crate::train::train;
-use crate::types::{MyAutodiffBackend, TrainingOptions};
+use crate::types::{MyAutodiffBackend, MyBackend, TrainingOptions};
 use crate::utils::generate_text;
 
 mod data;
@@ -70,9 +70,9 @@ struct GptOptions {
     #[argh(option, default = "String::from(\"merges.txt\")")]
     merges_file: String,
 
-    /// text to be continued by the model after training (Hello world! by default)
+    /// text to be continued by the model (Hello world! by default)
     #[argh(option, default = "String::from(\"Hello World!\")")]
-    text_to_continue: String,
+    text: String,
 
     /// random seed (123 by default).
     #[argh(option, default = "123")]
@@ -86,6 +86,17 @@ struct GptOptions {
     #[argh(option)]
     weights: String,
 
+    /// number of tokens to generate (25 by default).
+    #[argh(option, default = "25")]
+    num_tokens: usize,
+
+    /// top k tokens to consider when generating text (disabled by default from 0 to 50257).
+    #[argh(option, default = "0")]
+    top_k: usize,
+
+    /// temperature used when generating text (disabled by default from 0.0 to 1.0).
+    #[argh(option, default = "0.0")]
+    temperature: f32,
 }
 
 fn train_command(args: GptOptions) {
@@ -159,12 +170,13 @@ fn train_command(args: GptOptions) {
     println!("\tTraining took {:?}", end-start);
 
     println!("--- Generating Text After Training ---");
-    println!("\t{}", generate_text(&gpt2_model, &tokenizer, &args.text_to_continue, 25, args.context_length, 0.8, 20));
+    println!("\tGenerating {} tokens", args.num_tokens);
+    println!("\t{}", generate_text::<MyAutodiffBackend>(&gpt2_model, &tokenizer, &args.text, args.num_tokens, args.context_length, 0.8, 20));
 
     if !args.weights.is_empty() {
         println!("--- Saving Model Weights ---");
-        println!("\tSaving weights to {:?}", path);
         let path = PathBuf::from(args.weights.clone() + ".mpk.gz");
+        println!("\tSaving weights to {:?}", path);
         let basename_path = PathBuf::from(&args.weights);
         let recorder = NamedMpkGzFileRecorder::<FullPrecisionSettings>::new();
         gpt2_model
@@ -175,7 +187,42 @@ fn train_command(args: GptOptions) {
 
 
 fn generate_command(args: GptOptions) {
-    println!("ToDo");
+    println!("--- Initializing Tokenizer ---");
+    let tokenizer = Gpt2Tokenizer::from_file(
+        args.vocab_file,
+        args.merges_file,
+        false).expect("Error loading the tokenizer");
+
+    println!("--- Initializing Device ---");
+    println!("\tUsing seed {}", args.seed);
+    MyBackend::seed(args.seed);
+    let device = &<MyBackend as Backend>::Device::default();
+
+    println!("--- Initializing Model ---");
+    let mut gpt2_model: GPTModel<MyBackend> = GPTModelConfig::new(
+        50257,
+        args.context_length,
+        args.emb_dim,
+        args.num_heads,
+        args.num_layers,
+        0.1,
+        false).init(device);
+
+    if !args.weights.is_empty() {
+        let path = PathBuf::from(args.weights.clone() + ".mpk.gz");
+        let recorder = NamedMpkGzFileRecorder::<FullPrecisionSettings>::new();
+        if path.exists(){
+            let basename_path = PathBuf::from(&args.weights);
+            println!("\tLoading weights from {:?}", path);
+            gpt2_model = gpt2_model
+                            .load_file(basename_path, &recorder, device)
+                            .expect("Should be able to load the model weights from the provided file")
+        }
+    }
+
+    println!("--- Generating Text ---");
+    println!("\tGenerating {} tokens", args.num_tokens);
+    println!("\t{}", generate_text::<MyBackend>(&gpt2_model, &tokenizer, &args.text, args.num_tokens, args.context_length, args.temperature, args.top_k));
 }
 
 fn main() {
