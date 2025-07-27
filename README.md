@@ -57,7 +57,7 @@ You can generate text from a prompt using a pre-trained model. The generation pr
 
 **Command:**
 
-```sh
+```
 cargo run --release -- generate [OPTIONS]
 
 Options:
@@ -75,7 +75,7 @@ Options:
 
 **Example:**
 ```
-cargo run --release -- \
+cargo run --release -- generate\
   --text "The last time I saw"\
   --num-tokens 100\
   --temperature 0.7\
@@ -113,9 +113,9 @@ Options:
 
 **Example:**
 ```
-cargo run --release -- \
-  --context-length 256 \
-  --epochs 5 \
+cargo run --release -- train\
+  --context-length 256\
+  --epochs 5\
   --batch-size 4\
   --weights weights
 ```
