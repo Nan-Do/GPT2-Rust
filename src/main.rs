@@ -82,7 +82,8 @@ struct GptOptions {
     #[argh(option, default = "0.9")]
     train_ratio: f32,
 
-    /// file path for the model weights (weights by default)
+    /// file path for the model weights (weights by default, specify only the file name the
+    /// extension will be added by the tool)
     #[argh(option)]
     weights: String,
 
