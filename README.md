@@ -49,47 +49,74 @@ To get started, you'll need the Rust tool-chain installed on your system. You ca
 
 ## 🚀 Usage
 
-So far the tool only trains the model and uses it to generate text, the capability to store the weights and use the tool to just generate text will be probably added in the future.
+The tool provides two main subcommands: `generate` for creating text and `train` for training the model.
+
+### Generating Text
+
+You can generate text from a prompt using a pre-trained model. The generation process can be customized with several options.
+
+**Command:**
+
+```sh
+cargo run --release -- generate [OPTIONS]
+
+Options:
+  --vocab-file      vocab file used with the BPE Tokenizer (vocab.json by default)
+  --merges-file     merges file used with the BPE Tokenizer (merges.txt by default)
+  --text            text to be continued by the model (Hello world! by default)
+  --seed            random seed (123 by default).
+  --weights         file path for the model weights (weights by default)
+  --num-tokens      number of tokens to generate (25 by default).
+  --top-k           top k tokens to consider when generating text (disabled by
+                    default from 0 to 50257).
+  --temperature     temperature used when generating text (disabled by default
+                    from 0.0 to 1.0).
+```
+
+**Example:**
+```
+cargo run --release -- \
+  --text "The last time I saw"\
+  --num-tokens 100\
+  --temperature 0.7\
+  --top-k 150\
+  --weights weights
+```
+
 
 ### Training the Model
 
 You can train the model from scratch on your own dataset (e.g., a single large .txt file).
 
 **Command:**
-```
 
-cargo run --release -- [OPTIONS]
+```
+cargo run --release -- train [OPTIONS]
 
 Options:
   --context-length  context length for the GPT Model (1024 by default).
   --emb-dim         embedding dimension for the GPT Model (768 by default).
   --num-layers      number of layers in the Transformer Block (12 by default).
-  --num-heads       number of heads for the Multi Head Attention Block (12 by
-                    default).
+  --num-heads       number of heads for the Multi Head Attention Block (12 by default).
   --epochs          number of epochs to train (10 by default).
   --batch-size      batch size (2 by default).
   --training-file-name
                     text file that will be used to train the model
                     (the-verdict.txt by default)
-  --vocab-file      vocab file used with the BPE Tokenizer (vocab.json by
-                    default)
-  --merges-file     merges file used with the BPE Tokenizer (merges.txt by
-                    default)
-  --text-to-continue
-                    text to be continued by the model after training (Hello
-                    world! by default)
+  --vocab-file      vocab file used with the BPE Tokenizer (vocab.json by default)
+  --merges-file     merges file used with the BPE Tokenizer (merges.txt by default)
   --seed            random seed (123 by default).
   --train-ratio     train ratio for training (0.9 by default).
-  --help, help      display usage information
+  --weights         file path for the model weights (weights by default)
 ```
 
 
 **Example:**
-```Bash
-
+```
 cargo run --release -- \
   --context-length 256 \
   --epochs 5 \
-  --batch-size 4
+  --batch-size 4\
+  --weights weights
 ```
 
