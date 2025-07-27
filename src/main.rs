@@ -222,7 +222,11 @@ fn generate_command(args: GptOptions) {
 
     println!("--- Generating Text ---");
     println!("\tGenerating {} tokens", args.num_tokens);
+    let start = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
     println!("\t{}", generate_text::<MyBackend>(&gpt2_model, &tokenizer, &args.text, args.num_tokens, args.context_length, args.temperature, args.top_k));
+    let end = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    let duration = end - start;
+    println!("\t Generated {} tokens in {:?}, {} tokens/second", args.num_tokens, duration, (args.num_tokens as f64) / duration.as_secs_f64());
 }
 
 fn main() {
