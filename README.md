@@ -35,8 +35,8 @@ To get started, you'll need the Rust tool-chain installed on your system. You ca
 
 1.  **Clone the repository:**
     ```sh
-    git clone <YOUR_REPOSITORY_URL>
-    cd <your-repo-name>
+    git clone https://github.com/Nan-Do/GPT2-Rust
+    cd GPT2-Rust
     ```
 
 2.  **Build the project in release mode:**
