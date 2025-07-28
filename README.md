@@ -2,7 +2,7 @@
 
 This repository contains a from-scratch implementation of a GPT-2 style Large Language Model (LLM) written entirely in **Rust**. It utilizes the powerful and flexible [**Burn**](https://burn.dev/) deep learning framework.
 
-The primary goal of this project is to serve as an educational resource, demonstrating the core components of a modern LLM in a performant, type-safe language. It is a Rust-based counterpart to the excellent Python/PyTorch implementation by [Sebastian Raschka](https://sebastianraschka.com/).
+The primary goal of this project is to serve as an educational resource, demonstrating the core components of a modern LLM in a performant, type-safe language. It is a Rust-based counterpart to the excellent Python/PyTorch implementation by [**Sebastian Raschka**](https://sebastianraschka.com/).
 
 [![Rust](https://img.shields.io/badge/rust-1.88.0-orange.svg)](https://www.rust-lang.org/)
 
